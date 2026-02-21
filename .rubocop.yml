@@ -2,6 +2,8 @@ plugins: rubocop-rake
 
 AllCops:
   NewCops: enable
+  Exclude:
+    - 'spec/**/*'
 
 Layout/HashAlignment:
   EnforcedColonStyle: table

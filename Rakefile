@@ -1,11 +1,12 @@
 require 'jekyll'
+require 'rspec/core/rake_task'
 require_relative '_lib/asset_check'
 require_relative '_lib/db_control'
 require_relative '_lib/file_control'
 
-task :default do
-  Rake::Task['build'].invoke
-end
+RSpec::Core::RakeTask.new(:spec)
+
+task default: [:spec, :build]
 
 desc 'Build site after deleting cache'
 task build: [:clean] do

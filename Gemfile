@@ -16,6 +16,7 @@ gem 'webrick'
 gem 'sqlite3'
 
 group :development, :test do
+  gem 'rspec'
   gem 'rubocop'
   gem 'rubocop-rake'
 end

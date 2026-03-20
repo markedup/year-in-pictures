@@ -24,8 +24,7 @@ module PhotographerGenerator
       process(@name)                                # generate the other filename components
 
       pics = DbControl.get_photographer_pictures(photographer['id'])
-      # "year" is the 5th element in the array
-      pics_by_year = pics.group_by { |pic| pic[4] }
+      pics_by_year = pics.group_by { |pic| pic['year'] }
 
       # Define custom data - years and pics separate because liquid doesn't support hashes
       @data = {

@@ -1,6 +1,8 @@
 require_relative 'year'
 
 class Config
+  API_START_YEAR = 2019
+
   def self.database_path
     '_db/yip.db'
   end
@@ -48,7 +50,7 @@ class Config
   end
 
   def self.year_range
-    (Year.first_year..Year.last_year)
+    Year.year_range
   end
 
   def self.source_file_from_year_path(year)

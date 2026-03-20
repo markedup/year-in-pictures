@@ -1,3 +1,5 @@
+require_relative 'config'
+
 class Picture
   def initialize(data, year, next_pic, prev_pic)
     @image_filename = data['image']
@@ -12,11 +14,7 @@ class Picture
     @prev = prev_pic
 
     # Calculated values
-    @filename = generate_pagename
-  end
-
-  def generate_pagename
-    "#{File.basename(@image_filename, File.extname(@image_filename))}.html"
+    @filename = Config.get_generated_pagename(@image_filename)
   end
 
   # Add new or overwrite if already present
@@ -69,13 +67,15 @@ class Picture
 
   # SQL to get all pictures for a given month and year
   def self.get_all_by_month(month, year)
-    "SELECT filename, image_filename, caption, alt FROM pictures
-     WHERE month='#{month}' and year=#{year} ORDER BY filename ASC;"
+    sql = 'SELECT filename, image_filename, caption, alt FROM pictures
+           WHERE month=? AND year=? ORDER BY filename ASC'
+    [sql, [month, year]]
   end
 
   # SQL to get all pictures owned by a particular photographer
   def self.get_all_by_photographer(photographer_id)
-    "SELECT filename, image_filename, caption, alt, year FROM pictures
-     WHERE photographer=#{photographer_id} ORDER BY year DESC, filename ASC;"
+    sql = 'SELECT filename, image_filename, caption, alt, year FROM pictures
+           WHERE photographer=? ORDER BY year DESC, filename ASC'
+    [sql, [photographer_id]]
   end
 end

@@ -56,10 +56,6 @@ class AssetCheck
   end
 
   def self.count_output(count_test)
-    if count_test == true
-      count_test.to_s.green
-    else
-      count_test.to_s.red
-    end
+    count_test ? count_test.to_s.green : count_test.to_s.red
   end
 end

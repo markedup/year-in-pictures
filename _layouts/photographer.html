@@ -10,8 +10,8 @@ layout: layout
 
   {% for pic in page.pics[year] %}
     <li class="pure-u-1-2 pure-u-sm-1-2 pure-u-lg-1-3">
-      <a title="{{ pic[2] }}" href="/photos/{{ year }}/{{ pic[0] }}">
-        <img loading="lazy" alt="{{ pic[3] }}" src="/images/{{ year }}/thumbnails/{{ pic[1] }}">
+      <a title="{{ pic.caption }}" href="/photos/{{ year }}/{{ pic.filename }}">
+        <img loading="lazy" alt="{{ pic.alt }}" src="/images/{{ year }}/thumbnails/{{ pic.image_filename }}">
       </a>
     </li>
   {% endfor %}

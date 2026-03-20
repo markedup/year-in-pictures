@@ -31,11 +31,10 @@ class Year
     SQL
   end
 
-  def self.first_year
+  def self.year_range
     db = SQLite3::Database.open Config.database_path
-    year = db.execute 'select MIN(year) from years where year != 0;'
-    # Output is [[year]] hence this
-    year.first.first
+    row = db.execute('SELECT MIN(year), MAX(year) FROM years WHERE year != 0').first
+    (row[0]..row[1])
   end
 
   def self.last_year

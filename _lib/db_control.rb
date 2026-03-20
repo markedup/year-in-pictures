@@ -6,15 +6,17 @@ require_relative 'year'
 
 class DbControl
   def self.create
-    db = SQLite3::Database.new Config.database_path unless File.exist? Config.database_path
+    return if File.exist? Config.database_path
+
+    db = open_db(new: true)
     db.execute Picture.create_table_sql
     db.execute User.create_table_sql
     db.execute Year.create_table_sql
 
-    # Add setup data
-    add_years
-    add_users
-    add_unknown_pic
+    # Add setup data, sharing the open connection
+    add_years(db)
+    add_users(db)
+    add_unknown_pic(db)
   end
 
   def self.delete
@@ -30,9 +32,7 @@ class DbControl
     add_pictures(Year.last_year..Year.last_year)
   end
 
-  def self.add_years
-    db = SQLite3::Database.open Config.database_path
-
+  def self.add_years(db = open_db)
     years_data = YAML.load_file(Config.years_path)
     years_data.each do |year_data|
       year = Year.new(year_data)
@@ -40,9 +40,7 @@ class DbControl
     end
   end
 
-  def self.add_users
-    db = SQLite3::Database.open Config.database_path
-
+  def self.add_users(db = open_db)
     users_data = YAML.load_file(Config.users_path)['users']
     users_data.each do |user_data|
       user = User.new(user_data)
@@ -50,9 +48,7 @@ class DbControl
     end
   end
 
-  def self.add_unknown_pic
-    db = SQLite3::Database.open Config.database_path
-
+  def self.add_unknown_pic(db = open_db)
     pic_data = YAML.load_file(Config.unknown_pic_path).first
     pic = Picture.new(pic_data, 0, '', '')
     db.execute(pic.insert_sql, pic.values)
@@ -60,7 +56,7 @@ class DbControl
 
   # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   def self.add_pictures(year_range)
-    db = SQLite3::Database.open Config.database_path
+    db = open_db
 
     # Read each source file and add pictures to db
     year_range.each do |year|
@@ -89,12 +85,20 @@ class DbControl
   # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   def self.get_month_pictures(month, year)
-    db = SQLite3::Database.open Config.database_path
-    db.execute(Picture.get_all_by_month(month, year))
+    db = open_db
+    db.results_as_hash = true
+    sql, params = Picture.get_all_by_month(month, year)
+    db.execute(sql, params).map { |row| row.select { |k, _| k.is_a? String } }
   end
 
   def self.get_photographer_pictures(photographer_id)
-    db = SQLite3::Database.open Config.database_path
-    db.execute(Picture.get_all_by_photographer(photographer_id))
+    db = open_db
+    db.results_as_hash = true
+    sql, params = Picture.get_all_by_photographer(photographer_id)
+    db.execute(sql, params).map { |row| row.select { |k, _| k.is_a? String } }
+  end
+
+  private_class_method def self.open_db(new: false)
+    new ? SQLite3::Database.new(Config.database_path) : SQLite3::Database.open(Config.database_path)
   end
 end

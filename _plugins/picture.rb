@@ -24,18 +24,15 @@ class PictureMarkup < Liquid::Tag
   end
 
   def middle_html(pics, year)
-    middle = ''
-    pics.each do |pic|
-      middle += <<-ITERATOR
+    pics.map do |pic|
+      <<-ITERATOR
         <li class="pure-u-1-2 pure-u-sm-1-2 pure-u-lg-1-3">
-          <a title="#{pic[2]}" href="/photos/#{year}/#{pic[0]}">
-            <img loading="lazy" alt="#{pic[3]}" src="/images/#{year}/thumbnails/#{pic[1]}">
+          <a title="#{pic['caption']}" href="/photos/#{year}/#{pic['filename']}">
+            <img loading="lazy" alt="#{pic['alt']}" src="/images/#{year}/thumbnails/#{pic['image_filename']}">
           </a>
         </li>
       ITERATOR
-    end
-
-    middle
+    end.join
   end
 
   def foot_html

@@ -6,7 +6,7 @@ class FileControl
   def self.download_all_pictures_data
     Config.year_range.each do |year|
       # Skip the early years - this predates the Rails application so no data there
-      next if (2015..2018).include? year
+      next if year < Config::API_START_YEAR
 
       # Get the YAML from the app
       yaml_content = URI.parse(Config.pictures_yaml_url(year)).open.read
